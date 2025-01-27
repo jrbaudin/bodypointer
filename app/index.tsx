@@ -304,52 +304,34 @@ export default function App() {
     "worklet";
     const poseObject: any = objectDetect(frame);
     if (!poseObject) return null;
-    const xFactor = dimensions.width / frame.width;
-    const yFactor = dimensions.height / frame.height;
+    // Rotation and scaling factors
+    const xScale = dimensions.width / frame.height; // 414 / 1080
+    const yScale = dimensions.height / frame.width; // 896 / 1920
 
-    const poseCopy: any = {
-      leftShoulderPosition: { x: 0, y: 0 },
-      rightShoulderPosition: { x: 0, y: 0 },
-      leftElbowPosition: { x: 0, y: 0 },
-      rightElbowPosition: { x: 0, y: 0 },
-      leftWristPosition: { x: 0, y: 0 },
-      rightWristPosition: { x: 0, y: 0 },
-      leftHipPosition: { x: 0, y: 0 },
-      rightHipPosition: { x: 0, y: 0 },
-      leftKneePosition: { x: 0, y: 0 },
-      rightKneePosition: { x: 0, y: 0 },
-      leftAnklePosition: { x: 0, y: 0 },
-      rightAnklePosition: { x: 0, y: 0 },
-      leftPinkyPosition: { x: 0, y: 0 },
-      rightPinkyPosition: { x: 0, y: 0 },
-      leftIndexPosition: { x: 0, y: 0 },
-      rightIndexPosition: { x: 0, y: 0 },
-      leftThumbPosition: { x: 0, y: 0 },
-      rightThumbPosition: { x: 0, y: 0 },
-      leftHeelPosition: { x: 0, y: 0 },
-      rightHeelPosition: { x: 0, y: 0 },
-      nosePosition: { x: 0, y: 0 },
-      leftFootIndexPosition: { x: 0, y: 0 },
-      rightFootIndexPosition: { x: 0, y: 0 },
-      leftEyeInnerPosition: { x: 0, y: 0 },
-      rightEyeInnerPosition: { x: 0, y: 0 },
-      leftEyePosition: { x: 0, y: 0 },
-      rightEyePosition: { x: 0, y: 0 },
-      leftEyeOuterPosition: { x: 0, y: 0 },
-      rightEyeOuterPosition: { x: 0, y: 0 },
-      leftEarPosition: { x: 0, y: 0 },
-      rightEarPosition: { x: 0, y: 0 },
-      leftMouthPosition: { x: 0, y: 0 },
-      rightMouthPosition: { x: 0, y: 0 },
-    };
+    // Adjust this offset to fine-tune Y positioning
+    const yOffset = 25; // Adjust this value based on visual testing
 
-    Object.keys(poseObject).forEach((v: any) => {
-      poseCopy[v] = {
-        x: poseObject[v].x * xFactor,
-        y: poseObject[v].y * yFactor,
+    const adjustedPose: any = {};
+
+    Object.keys(poseObject).forEach((key) => {
+      const originalPoint = poseObject[key];
+
+      // Rotate coordinates
+      const rotatedX = originalPoint.y;
+      const rotatedY = frame.width - originalPoint.x;
+
+      // Flip X and Y axes
+      const flippedX = dimensions.width - rotatedX * xScale;
+      const flippedY = dimensions.height - rotatedY * yScale - yOffset;
+
+      // Assign adjusted coordinates
+      adjustedPose[key] = {
+        x: flippedX,
+        y: flippedY,
       };
     });
-    onPoseDetected(poseCopy);
+
+    onPoseDetected(adjustedPose);
   }, []);
 
   if (!device) {
@@ -471,7 +453,7 @@ export default function App() {
               strokeWidth="1.5"
               fill="seagreen"
             />
-            <AnimatedCircle
+            {/* <AnimatedCircle
               animatedProps={leftPinky}
               r="10"
               stroke="darkred"
@@ -512,7 +494,7 @@ export default function App() {
               stroke="crimson"
               strokeWidth="1.5"
               fill="wheat"
-            />
+            /> */}
             <AnimatedCircle
               animatedProps={leftHeel}
               r="10"
@@ -527,13 +509,13 @@ export default function App() {
               strokeWidth="1.5"
               fill="powderblue"
             />
-            <AnimatedCircle
+            {/* <AnimatedCircle
               animatedProps={nose}
               r="10"
               stroke="slateblue"
               strokeWidth="1.5"
               fill="tan"
-            />
+            /> */}
             <AnimatedCircle
               animatedProps={leftFootIndex}
               r="10"
@@ -548,7 +530,7 @@ export default function App() {
               strokeWidth="1.5"
               fill="azure"
             />
-            <AnimatedCircle
+            {/* <AnimatedCircle
               animatedProps={leftEyeInner}
               r="10"
               stroke="darkgoldenrod"
@@ -561,22 +543,22 @@ export default function App() {
               stroke="deeppink"
               strokeWidth="1.5"
               fill="cornsilk"
-            />
+            /> */}
             <AnimatedCircle
               animatedProps={leftEye}
               r="10"
-              stroke="mediumvioletred"
+              stroke="blue"
               strokeWidth="1.5"
-              fill="thistle"
+              fill="red"
             />
             <AnimatedCircle
               animatedProps={rightEye}
               r="10"
-              stroke="royalblue"
+              stroke="red"
               strokeWidth="1.5"
-              fill="beige"
+              fill="blue"
             />
-            <AnimatedCircle
+            {/* <AnimatedCircle
               animatedProps={leftEyeOuter}
               r="10"
               stroke="sienna"
@@ -589,8 +571,8 @@ export default function App() {
               stroke="peru"
               strokeWidth="1.5"
               fill="lightgoldenrodyellow"
-            />
-            <AnimatedCircle
+            /> */}
+            {/* <AnimatedCircle
               animatedProps={leftEar}
               r="10"
               stroke="steelblue"
@@ -617,7 +599,7 @@ export default function App() {
               stroke="slategrey"
               strokeWidth="1.5"
               fill="floralwhite"
-            />
+            /> */}
           </Svg>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
