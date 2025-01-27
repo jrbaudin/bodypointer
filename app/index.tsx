@@ -17,10 +17,9 @@ import {
 } from "react-native-vision-camera";
 import Animated, {
   useSharedValue,
-  SharedValue,
   useAnimatedProps,
 } from "react-native-reanimated";
-import Svg, { Line, Circle } from "react-native-svg";
+import Svg, { Circle } from "react-native-svg";
 import { Worklets } from "react-native-worklets-core";
 
 type Pose = {
@@ -173,36 +172,6 @@ export default function App() {
     cy: pose?.value?.rightAnklePosition?.y ?? 0,
   }));
 
-  const leftPinky = useAnimatedProps(() => ({
-    cx: pose?.value?.leftPinkyPosition?.x ?? 0,
-    cy: pose?.value?.leftPinkyPosition?.y ?? 0,
-  }));
-
-  const rightPinky = useAnimatedProps(() => ({
-    cx: pose?.value?.rightPinkyPosition?.x ?? 0,
-    cy: pose?.value?.rightPinkyPosition?.y ?? 0,
-  }));
-
-  const leftIndex = useAnimatedProps(() => ({
-    cx: pose?.value?.leftIndexPosition?.x ?? 0,
-    cy: pose?.value?.leftIndexPosition?.y ?? 0,
-  }));
-
-  const rightIndex = useAnimatedProps(() => ({
-    cx: pose?.value?.rightIndexPosition?.x ?? 0,
-    cy: pose?.value?.rightIndexPosition?.y ?? 0,
-  }));
-
-  const leftThumb = useAnimatedProps(() => ({
-    cx: pose?.value?.leftThumbPosition?.x ?? 0,
-    cy: pose?.value?.leftThumbPosition?.y ?? 0,
-  }));
-
-  const rightThumb = useAnimatedProps(() => ({
-    cx: pose?.value?.rightThumbPosition?.x ?? 0,
-    cy: pose?.value?.rightThumbPosition?.y ?? 0,
-  }));
-
   const leftHeel = useAnimatedProps(() => ({
     cx: pose?.value?.leftHeelPosition?.x ?? 0,
     cy: pose?.value?.leftHeelPosition?.y ?? 0,
@@ -211,71 +180,6 @@ export default function App() {
   const rightHeel = useAnimatedProps(() => ({
     cx: pose?.value?.rightHeelPosition?.x ?? 0,
     cy: pose?.value?.rightHeelPosition?.y ?? 0,
-  }));
-
-  const nose = useAnimatedProps(() => ({
-    cx: pose?.value?.nosePosition?.x ?? 0,
-    cy: pose?.value?.nosePosition?.y ?? 0,
-  }));
-
-  const leftFootIndex = useAnimatedProps(() => ({
-    cx: pose?.value?.leftFootIndexPosition?.x ?? 0,
-    cy: pose?.value?.leftFootIndexPosition?.y ?? 0,
-  }));
-
-  const rightFootIndex = useAnimatedProps(() => ({
-    cx: pose?.value?.rightFootIndexPosition?.x ?? 0,
-    cy: pose?.value?.rightFootIndexPosition?.y ?? 0,
-  }));
-
-  const leftEyeInner = useAnimatedProps(() => ({
-    cx: pose?.value?.leftEyeInnerPosition?.x ?? 0,
-    cy: pose?.value?.leftEyeInnerPosition?.y ?? 0,
-  }));
-
-  const rightEyeInner = useAnimatedProps(() => ({
-    cx: pose?.value?.rightEyeInnerPosition?.x ?? 0,
-    cy: pose?.value?.rightEyeInnerPosition?.y ?? 0,
-  }));
-
-  const leftEye = useAnimatedProps(() => ({
-    cx: pose?.value?.leftEyePosition?.x ?? 0,
-    cy: pose?.value?.leftEyePosition?.y ?? 0,
-  }));
-
-  const rightEye = useAnimatedProps(() => ({
-    cx: pose?.value?.rightEyePosition?.x ?? 0,
-    cy: pose?.value?.rightEyePosition?.y ?? 0,
-  }));
-
-  const leftEyeOuter = useAnimatedProps(() => ({
-    cx: pose?.value?.leftEyeOuterPosition?.x ?? 0,
-    cy: pose?.value?.leftEyeOuterPosition?.y ?? 0,
-  }));
-
-  const rightEyeOuter = useAnimatedProps(() => ({
-    cx: pose?.value?.rightEyeOuterPosition?.x ?? 0,
-    cy: pose?.value?.rightEyeOuterPosition?.y ?? 0,
-  }));
-
-  const leftEar = useAnimatedProps(() => ({
-    cx: pose?.value?.leftEarPosition?.x ?? 0,
-    cy: pose?.value?.leftEarPosition?.y ?? 0,
-  }));
-
-  const rightEar = useAnimatedProps(() => ({
-    cx: pose?.value?.rightEarPosition?.x ?? 0,
-    cy: pose?.value?.rightEarPosition?.y ?? 0,
-  }));
-
-  const leftMouth = useAnimatedProps(() => ({
-    cx: pose?.value?.leftMouthPosition?.x ?? 0,
-    cy: pose?.value?.leftMouthPosition?.y ?? 0,
-  }));
-
-  const rightMouth = useAnimatedProps(() => ({
-    cx: pose?.value?.rightMouthPosition?.x ?? 0,
-    cy: pose?.value?.rightMouthPosition?.y ?? 0,
   }));
 
   const dimensions = useWindowDimensions();
@@ -437,20 +341,6 @@ export default function App() {
               strokeWidth="1.5"
               fill="red"
             />
-            {/* <AnimatedCircle
-              animatedProps={leftEye}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightEye}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            /> */}
             <AnimatedCircle
               animatedProps={leftWrist}
               r="10"
@@ -465,128 +355,6 @@ export default function App() {
               strokeWidth="1.5"
               fill="red"
             />
-            {/* <AnimatedCircle
-              animatedProps={leftFootIndex}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightFootIndex}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            /> */}
-
-            {/* <AnimatedCircle
-              animatedProps={leftPinky}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightPinky}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={leftIndex}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightIndex}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={leftThumb}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightThumb}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            /> */}
-            {/* <AnimatedCircle
-              animatedProps={nose}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            /> */}
-
-            {/* <AnimatedCircle
-              animatedProps={leftEyeInner}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightEyeInner}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            /> */}
-
-            {/* <AnimatedCircle
-              animatedProps={leftEyeOuter}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightEyeOuter}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            /> */}
-            {/* <AnimatedCircle
-              animatedProps={leftEar}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightEar}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={leftMouth}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightMouth}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            /> */}
           </Svg>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
