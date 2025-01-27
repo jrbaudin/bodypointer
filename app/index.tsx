@@ -15,53 +15,14 @@ import {
   useCameraPermission,
   VisionCameraProxy,
 } from "react-native-vision-camera";
-import Animated, {
-  useSharedValue,
-  useAnimatedProps,
-} from "react-native-reanimated";
-import Svg, { Circle } from "react-native-svg";
+import { useSharedValue, useAnimatedProps } from "react-native-reanimated";
+import Svg from "react-native-svg";
 import { Worklets } from "react-native-worklets-core";
+import { defaultPose } from "@/data";
+import { Pose } from "@/types";
+import { BodyPointMap } from "@/components/BodyPointMap/BodyPointMap";
 
-type Pose = {
-  leftShoulderPosition: { x: number; y: number };
-  rightShoulderPosition: { x: number; y: number };
-  leftElbowPosition: { x: number; y: number };
-  rightElbowPosition: { x: number; y: number };
-  leftWristPosition: { x: number; y: number };
-  rightWristPosition: { x: number; y: number };
-  leftHipPosition: { x: number; y: number };
-  rightHipPosition: { x: number; y: number };
-  leftKneePosition: { x: number; y: number };
-  rightKneePosition: { x: number; y: number };
-  leftAnklePosition: { x: number; y: number };
-  rightAnklePosition: { x: number; y: number };
-  leftPinkyPosition: { x: number; y: number };
-  rightPinkyPosition: { x: number; y: number };
-  leftIndexPosition: { x: number; y: number };
-  rightIndexPosition: { x: number; y: number };
-  leftThumbPosition: { x: number; y: number };
-  rightThumbPosition: { x: number; y: number };
-  leftHeelPosition: { x: number; y: number };
-  rightHeelPosition: { x: number; y: number };
-  nosePosition: { x: number; y: number };
-  leftFootIndexPosition: { x: number; y: number };
-  rightFootIndexPosition: { x: number; y: number };
-  leftEyeInnerPosition: { x: number; y: number };
-  rightEyeInnerPosition: { x: number; y: number };
-  leftEyePosition: { x: number; y: number };
-  rightEyePosition: { x: number; y: number };
-  leftEyeOuterPosition: { x: number; y: number };
-  rightEyeOuterPosition: { x: number; y: number };
-  leftEarPosition: { x: number; y: number };
-  rightEarPosition: { x: number; y: number };
-  leftMouthPosition: { x: number; y: number };
-  rightMouthPosition: { x: number; y: number };
-};
-
-/* const AnimatedLine = Animated.createAnimatedComponent(Line); */
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-const objectDetect = (frame: any, facing: "back" | "front") => {
+const objectDetect = (frame: any) => {
   "worklet";
   const plugin = VisionCameraProxy.initFrameProcessorPlugin(
     "poseDetection",
@@ -71,47 +32,17 @@ const objectDetect = (frame: any, facing: "back" | "front") => {
   return plugin.call(frame);
 };
 
-const defaultPose: Pose = {
-  leftShoulderPosition: { x: 0, y: 0 },
-  rightShoulderPosition: { x: 0, y: 0 },
-  leftElbowPosition: { x: 0, y: 0 },
-  rightElbowPosition: { x: 0, y: 0 },
-  leftWristPosition: { x: 0, y: 0 },
-  rightWristPosition: { x: 0, y: 0 },
-  leftHipPosition: { x: 0, y: 0 },
-  rightHipPosition: { x: 0, y: 0 },
-  leftKneePosition: { x: 0, y: 0 },
-  rightKneePosition: { x: 0, y: 0 },
-  leftAnklePosition: { x: 0, y: 0 },
-  rightAnklePosition: { x: 0, y: 0 },
-  leftPinkyPosition: { x: 0, y: 0 },
-  rightPinkyPosition: { x: 0, y: 0 },
-  leftIndexPosition: { x: 0, y: 0 },
-  rightIndexPosition: { x: 0, y: 0 },
-  leftThumbPosition: { x: 0, y: 0 },
-  rightThumbPosition: { x: 0, y: 0 },
-  leftHeelPosition: { x: 0, y: 0 },
-  rightHeelPosition: { x: 0, y: 0 },
-  nosePosition: { x: 0, y: 0 },
-  leftFootIndexPosition: { x: 0, y: 0 },
-  rightFootIndexPosition: { x: 0, y: 0 },
-  leftEyeInnerPosition: { x: 0, y: 0 },
-  rightEyeInnerPosition: { x: 0, y: 0 },
-  leftEyePosition: { x: 0, y: 0 },
-  rightEyePosition: { x: 0, y: 0 },
-  leftEyeOuterPosition: { x: 0, y: 0 },
-  rightEyeOuterPosition: { x: 0, y: 0 },
-  leftEarPosition: { x: 0, y: 0 },
-  rightEarPosition: { x: 0, y: 0 },
-  leftMouthPosition: { x: 0, y: 0 },
-  rightMouthPosition: { x: 0, y: 0 },
-};
-
 export default function App() {
   const pose = useSharedValue(defaultPose);
   const [facing, setFacing] = useState<"back" | "front">("front");
   const { hasPermission, requestPermission } = useCameraPermission();
+
   const device = useCameraDevice(facing);
+  const dimensions = useWindowDimensions();
+
+  const toggleCameraFacing = () => {
+    setFacing((current) => (current === "back" ? "front" : "back"));
+  };
 
   const leftShoulder = useAnimatedProps(() => ({
     cx: pose?.value?.leftShoulderPosition?.x ?? 0,
@@ -121,98 +52,109 @@ export default function App() {
     cx: pose?.value?.rightShoulderPosition?.x ?? 0,
     cy: pose?.value?.rightShoulderPosition?.y ?? 0,
   }));
-
   const leftElbow = useAnimatedProps(() => ({
     cx: pose?.value?.leftElbowPosition?.x ?? 0,
     cy: pose?.value?.leftElbowPosition?.y ?? 0,
   }));
-
   const rightElbow = useAnimatedProps(() => ({
     cx: pose?.value?.rightElbowPosition?.x ?? 0,
     cy: pose?.value?.rightElbowPosition?.y ?? 0,
   }));
-
   const leftWrist = useAnimatedProps(() => ({
     cx: pose?.value?.leftWristPosition?.x ?? 0,
     cy: pose?.value?.leftWristPosition?.y ?? 0,
   }));
-
   const rightWrist = useAnimatedProps(() => ({
     cx: pose?.value?.rightWristPosition?.x ?? 0,
     cy: pose?.value?.rightWristPosition?.y ?? 0,
   }));
-
   const leftHip = useAnimatedProps(() => ({
     cx: pose?.value?.leftHipPosition?.x ?? 0,
     cy: pose?.value?.leftHipPosition?.y ?? 0,
   }));
-
   const rightHip = useAnimatedProps(() => ({
     cx: pose?.value?.rightHipPosition?.x ?? 0,
     cy: pose?.value?.rightHipPosition?.y ?? 0,
   }));
-
   const leftKnee = useAnimatedProps(() => ({
     cx: pose?.value?.leftKneePosition?.x ?? 0,
     cy: pose?.value?.leftKneePosition?.y ?? 0,
   }));
-
   const rightKnee = useAnimatedProps(() => ({
     cx: pose?.value?.rightKneePosition?.x ?? 0,
     cy: pose?.value?.rightKneePosition?.y ?? 0,
   }));
-
   const leftAnkle = useAnimatedProps(() => ({
     cx: pose?.value?.leftAnklePosition?.x ?? 0,
     cy: pose?.value?.leftAnklePosition?.y ?? 0,
   }));
-
   const rightAnkle = useAnimatedProps(() => ({
     cx: pose?.value?.rightAnklePosition?.x ?? 0,
     cy: pose?.value?.rightAnklePosition?.y ?? 0,
   }));
-
   const leftHeel = useAnimatedProps(() => ({
     cx: pose?.value?.leftHeelPosition?.x ?? 0,
     cy: pose?.value?.leftHeelPosition?.y ?? 0,
   }));
-
   const rightHeel = useAnimatedProps(() => ({
     cx: pose?.value?.rightHeelPosition?.x ?? 0,
     cy: pose?.value?.rightHeelPosition?.y ?? 0,
   }));
+  const leftEye = useAnimatedProps(() => ({
+    cx: pose?.value?.leftEyePosition?.x ?? 0,
+    cy: pose?.value?.leftEyePosition?.y ?? 0,
+  }));
+  const rightEye = useAnimatedProps(() => ({
+    cx: pose?.value?.rightEyePosition?.x ?? 0,
+    cy: pose?.value?.rightEyePosition?.y ?? 0,
+  }));
 
-  const dimensions = useWindowDimensions();
-
+  /**
+   * Due to some unclear issues with setting the shared value not
+   * being propagated all the way this allows the shared value
+   * to be set through this worklet JS bridge.
+   *
+   * Not the best but makes it work in this first iteration.
+   */
   const onPoseDetected = Worklets.createRunOnJS((updatedPose: Pose) => {
     pose.value = updatedPose;
   });
 
   const frameProcessor = useFrameProcessor((frame) => {
     "worklet";
-    const poseObject: any = objectDetect(frame, facing);
+    const poseObject: any = objectDetect(frame);
     if (!poseObject) return null;
-    // Rotation and scaling factors
-    const xScale = dimensions.width / frame.height; // 414 / 1080
-    const yScale = dimensions.height / frame.width; // 896 / 1920
+    /**
+     * The dimensions of the viewport and the frame will be
+     * in different orientation (landscape vs portrait)
+     * so please note the scaling factors are flipped to
+     * address this.
+     */
+    const xScale = dimensions.width / frame.height;
+    const yScale = dimensions.height / frame.width;
 
-    // Adjust this offset to fine-tune Y positioning
-    const yOffset = 35; // Adjust this value based on visual testing
+    /**
+     * This allows fine-tuning the Y positioning
+     * due to mismatch in the coordinates from
+     * the frame processor and screen drawing.
+     */
+    const yOffset = 35;
 
     const adjustedPose: any = {};
 
     Object.keys(poseObject).forEach((key) => {
       const originalPoint = poseObject[key];
-
-      // Rotate coordinates
+      /**
+       * Hacky temp solution: Rotate coordinates
+       */
       const rotatedX = originalPoint.y;
       const rotatedY = frame.width - originalPoint.x;
-
-      // Flip X and Y axes
+      /**
+       * Hacky temp solution: Flip X and Y axes
+       */
       const flippedX = dimensions.width - rotatedX * xScale;
       const flippedY = dimensions.height - rotatedY * yScale - yOffset;
 
-      // Assign adjusted coordinates
       adjustedPose[key] = {
         x: flippedX,
         y: flippedY,
@@ -223,12 +165,16 @@ export default function App() {
   }, []);
 
   if (!device) {
-    // Camera permissions are still loading.
+    /**
+     * Camera permissions are still loading.
+     */
     return <View />;
   }
 
   if (!hasPermission) {
-    // Camera permissions are not granted yet.
+    /**
+     * Camera permissions are not granted yet.
+     */
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
@@ -237,9 +183,6 @@ export default function App() {
         <Button onPress={requestPermission} title="grant permission" />
       </View>
     );
-  }
-  function toggleCameraFacing() {
-    setFacing((current) => (current === "back" ? "front" : "back"));
   }
   return (
     <View style={styles.container}>
@@ -257,103 +200,25 @@ export default function App() {
             width={Dimensions.get("window").width}
             style={styles.linesContainer}
           >
-            <AnimatedCircle
-              animatedProps={leftShoulder}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightShoulder}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            />
-            <AnimatedCircle
-              animatedProps={leftElbow}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightElbow}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            />
-            <AnimatedCircle
-              animatedProps={leftHip}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightHip}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            />
-            <AnimatedCircle
-              animatedProps={leftKnee}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightKnee}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            />
-            <AnimatedCircle
-              animatedProps={leftAnkle}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightAnkle}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            />
-            <AnimatedCircle
-              animatedProps={leftHeel}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightHeel}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
-            />
-            <AnimatedCircle
-              animatedProps={leftWrist}
-              r="10"
-              stroke="red"
-              strokeWidth="1.5"
-              fill="blue"
-            />
-            <AnimatedCircle
-              animatedProps={rightWrist}
-              r="10"
-              stroke="blue"
-              strokeWidth="1.5"
-              fill="red"
+            <BodyPointMap
+              points={[
+                { pointData: leftShoulder, side: "left" },
+                { pointData: rightShoulder, side: "right" },
+                { pointData: leftElbow, side: "left" },
+                { pointData: rightElbow, side: "right" },
+                { pointData: leftHip, side: "left" },
+                { pointData: rightHip, side: "right" },
+                { pointData: leftKnee, side: "left" },
+                { pointData: rightKnee, side: "right" },
+                { pointData: leftAnkle, side: "left" },
+                { pointData: rightAnkle, side: "right" },
+                { pointData: leftHeel, side: "left" },
+                { pointData: rightHeel, side: "right" },
+                { pointData: leftWrist, side: "left" },
+                { pointData: rightWrist, side: "right" },
+                { pointData: rightEye, side: "right" },
+                { pointData: leftEye, side: "left" },
+              ]}
             />
           </Svg>
           <View style={styles.buttonContainer}>
@@ -378,9 +243,6 @@ const styles = StyleSheet.create({
   message: {
     textAlign: "center",
     paddingBottom: 10,
-  },
-  camera: {
-    flex: 1,
   },
   buttonContainer: {
     flex: 1,
