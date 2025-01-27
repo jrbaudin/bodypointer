@@ -59,25 +59,10 @@ type Pose = {
   rightMouthPosition: { x: number; y: number };
 };
 
-const AnimatedLine = Animated.createAnimatedComponent(Line);
+/* const AnimatedLine = Animated.createAnimatedComponent(Line); */
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const usePosition = (
-  pose: SharedValue<Pose>,
-  valueName1: string,
-  valueName2: string
-) => {
-  return useAnimatedProps(() => {
-    return {
-      x1: pose.value[valueName1 as keyof Pose]?.x,
-      y1: pose.value[valueName1 as keyof Pose]?.y,
-      x2: pose.value[valueName2 as keyof Pose]?.x,
-      y2: pose.value[valueName2 as keyof Pose]?.y,
-    };
-  });
-};
-
-const objectDetect = (frame: any) => {
+const objectDetect = (frame: any, facing: "back" | "front") => {
   "worklet";
   const plugin = VisionCameraProxy.initFrameProcessorPlugin(
     "poseDetection",
@@ -133,7 +118,6 @@ export default function App() {
     cx: pose?.value?.leftShoulderPosition?.x ?? 0,
     cy: pose?.value?.leftShoulderPosition?.y ?? 0,
   }));
-
   const rightShoulder = useAnimatedProps(() => ({
     cx: pose?.value?.rightShoulderPosition?.x ?? 0,
     cy: pose?.value?.rightShoulderPosition?.y ?? 0,
@@ -302,14 +286,14 @@ export default function App() {
 
   const frameProcessor = useFrameProcessor((frame) => {
     "worklet";
-    const poseObject: any = objectDetect(frame);
+    const poseObject: any = objectDetect(frame, facing);
     if (!poseObject) return null;
     // Rotation and scaling factors
     const xScale = dimensions.width / frame.height; // 414 / 1080
     const yScale = dimensions.height / frame.width; // 896 / 1920
 
     // Adjust this offset to fine-tune Y positioning
-    const yOffset = 25; // Adjust this value based on visual testing
+    const yOffset = 35; // Adjust this value based on visual testing
 
     const adjustedPose: any = {};
 
@@ -374,231 +358,234 @@ export default function App() {
               r="10"
               stroke="red"
               strokeWidth="1.5"
-              fill="orange"
+              fill="blue"
             />
             <AnimatedCircle
               animatedProps={rightShoulder}
               r="10"
               stroke="blue"
               strokeWidth="1.5"
-              fill="yellow"
+              fill="red"
             />
             <AnimatedCircle
               animatedProps={leftElbow}
               r="10"
-              stroke="green"
+              stroke="red"
               strokeWidth="1.5"
-              fill="pink"
+              fill="blue"
             />
             <AnimatedCircle
               animatedProps={rightElbow}
-              r="10"
-              stroke="purple"
-              strokeWidth="1.5"
-              fill="cyan"
-            />
-            <AnimatedCircle
-              animatedProps={leftWrist}
-              r="10"
-              stroke="black"
-              strokeWidth="1.5"
-              fill="lime"
-            />
-            <AnimatedCircle
-              animatedProps={rightWrist}
-              r="10"
-              stroke="darkblue"
-              strokeWidth="1.5"
-              fill="gold"
-            />
-            <AnimatedCircle
-              animatedProps={leftHip}
-              r="10"
-              stroke="brown"
-              strokeWidth="1.5"
-              fill="lightblue"
-            />
-            <AnimatedCircle
-              animatedProps={rightHip}
-              r="10"
-              stroke="darkgreen"
-              strokeWidth="1.5"
-              fill="magenta"
-            />
-            <AnimatedCircle
-              animatedProps={leftKnee}
-              r="10"
-              stroke="teal"
-              strokeWidth="1.5"
-              fill="peachpuff"
-            />
-            <AnimatedCircle
-              animatedProps={rightKnee}
-              r="10"
-              stroke="maroon"
-              strokeWidth="1.5"
-              fill="lightcoral"
-            />
-            <AnimatedCircle
-              animatedProps={leftAnkle}
-              r="10"
-              stroke="navy"
-              strokeWidth="1.5"
-              fill="plum"
-            />
-            <AnimatedCircle
-              animatedProps={rightAnkle}
-              r="10"
-              stroke="gray"
-              strokeWidth="1.5"
-              fill="seagreen"
-            />
-            {/* <AnimatedCircle
-              animatedProps={leftPinky}
-              r="10"
-              stroke="darkred"
-              strokeWidth="1.5"
-              fill="lavender"
-            />
-            <AnimatedCircle
-              animatedProps={rightPinky}
-              r="10"
-              stroke="goldenrod"
-              strokeWidth="1.5"
-              fill="skyblue"
-            />
-            <AnimatedCircle
-              animatedProps={leftIndex}
-              r="10"
-              stroke="chartreuse"
-              strokeWidth="1.5"
-              fill="hotpink"
-            />
-            <AnimatedCircle
-              animatedProps={rightIndex}
-              r="10"
-              stroke="orchid"
-              strokeWidth="1.5"
-              fill="khaki"
-            />
-            <AnimatedCircle
-              animatedProps={leftThumb}
-              r="10"
-              stroke="mediumblue"
-              strokeWidth="1.5"
-              fill="salmon"
-            />
-            <AnimatedCircle
-              animatedProps={rightThumb}
-              r="10"
-              stroke="crimson"
-              strokeWidth="1.5"
-              fill="wheat"
-            /> */}
-            <AnimatedCircle
-              animatedProps={leftHeel}
-              r="10"
-              stroke="olive"
-              strokeWidth="1.5"
-              fill="mintcream"
-            />
-            <AnimatedCircle
-              animatedProps={rightHeel}
-              r="10"
-              stroke="darkmagenta"
-              strokeWidth="1.5"
-              fill="powderblue"
-            />
-            {/* <AnimatedCircle
-              animatedProps={nose}
-              r="10"
-              stroke="slateblue"
-              strokeWidth="1.5"
-              fill="tan"
-            /> */}
-            <AnimatedCircle
-              animatedProps={leftFootIndex}
-              r="10"
-              stroke="indigo"
-              strokeWidth="1.5"
-              fill="oldlace"
-            />
-            <AnimatedCircle
-              animatedProps={rightFootIndex}
-              r="10"
-              stroke="darkcyan"
-              strokeWidth="1.5"
-              fill="azure"
-            />
-            {/* <AnimatedCircle
-              animatedProps={leftEyeInner}
-              r="10"
-              stroke="darkgoldenrod"
-              strokeWidth="1.5"
-              fill="linen"
-            />
-            <AnimatedCircle
-              animatedProps={rightEyeInner}
-              r="10"
-              stroke="deeppink"
-              strokeWidth="1.5"
-              fill="cornsilk"
-            /> */}
-            <AnimatedCircle
-              animatedProps={leftEye}
               r="10"
               stroke="blue"
               strokeWidth="1.5"
               fill="red"
             />
             <AnimatedCircle
-              animatedProps={rightEye}
+              animatedProps={leftHip}
               r="10"
               stroke="red"
               strokeWidth="1.5"
               fill="blue"
             />
+            <AnimatedCircle
+              animatedProps={rightHip}
+              r="10"
+              stroke="blue"
+              strokeWidth="1.5"
+              fill="red"
+            />
+            <AnimatedCircle
+              animatedProps={leftKnee}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightKnee}
+              r="10"
+              stroke="blue"
+              strokeWidth="1.5"
+              fill="red"
+            />
+            <AnimatedCircle
+              animatedProps={leftAnkle}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightAnkle}
+              r="10"
+              stroke="blue"
+              strokeWidth="1.5"
+              fill="red"
+            />
+            <AnimatedCircle
+              animatedProps={leftHeel}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightHeel}
+              r="10"
+              stroke="blue"
+              strokeWidth="1.5"
+              fill="red"
+            />
+            {/* <AnimatedCircle
+              animatedProps={leftEye}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightEye}
+              r="10"
+              stroke="blue"
+              strokeWidth="1.5"
+              fill="red"
+            /> */}
+            <AnimatedCircle
+              animatedProps={leftWrist}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightWrist}
+              r="10"
+              stroke="blue"
+              strokeWidth="1.5"
+              fill="red"
+            />
+            {/* <AnimatedCircle
+              animatedProps={leftFootIndex}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightFootIndex}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            /> */}
+
+            {/* <AnimatedCircle
+              animatedProps={leftPinky}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightPinky}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={leftIndex}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightIndex}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={leftThumb}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightThumb}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            /> */}
+            {/* <AnimatedCircle
+              animatedProps={nose}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            /> */}
+
+            {/* <AnimatedCircle
+              animatedProps={leftEyeInner}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            />
+            <AnimatedCircle
+              animatedProps={rightEyeInner}
+              r="10"
+              stroke="red"
+              strokeWidth="1.5"
+              fill="blue"
+            /> */}
+
             {/* <AnimatedCircle
               animatedProps={leftEyeOuter}
               r="10"
-              stroke="sienna"
+              stroke="red"
               strokeWidth="1.5"
-              fill="burlywood"
+              fill="blue"
             />
             <AnimatedCircle
               animatedProps={rightEyeOuter}
               r="10"
-              stroke="peru"
+              stroke="red"
               strokeWidth="1.5"
-              fill="lightgoldenrodyellow"
+              fill="blue"
             /> */}
             {/* <AnimatedCircle
               animatedProps={leftEar}
               r="10"
-              stroke="steelblue"
+              stroke="red"
               strokeWidth="1.5"
-              fill="antiquewhite"
+              fill="blue"
             />
             <AnimatedCircle
               animatedProps={rightEar}
               r="10"
-              stroke="turquoise"
+              stroke="red"
               strokeWidth="1.5"
-              fill="honeydew"
+              fill="blue"
             />
             <AnimatedCircle
               animatedProps={leftMouth}
               r="10"
-              stroke="seashell"
+              stroke="red"
               strokeWidth="1.5"
-              fill="ivory"
+              fill="blue"
             />
             <AnimatedCircle
               animatedProps={rightMouth}
               r="10"
-              stroke="slategrey"
+              stroke="red"
               strokeWidth="1.5"
-              fill="floralwhite"
+              fill="blue"
             /> */}
           </Svg>
           <View style={styles.buttonContainer}>
